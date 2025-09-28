@@ -1,6 +1,7 @@
 import sqlite3
 from flask import Flask, g, render_template, request, session, flash, redirect, url_for, abort
 from flask import Flask, g, render_template, request, session, flash, redirect, url_for, abort, jsonify
+import os
 
 DATABASE = "flaskr.db"
 USERNAME = "admin"
@@ -106,4 +107,5 @@ def index():
 
 if __name__ == "__main__":
     init_db()
-    app.run()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
