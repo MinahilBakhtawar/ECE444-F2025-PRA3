@@ -52,6 +52,12 @@ def test_empty_db(client):
     rv = client.get("/")
     assert b"No entries yet. Add some!" in rv.data
 
+def test_search(client):
+    response = client.get("/search/")
+    assert response.status_code == 200
+    html = response.data.decode()
+    assert "Search" in html
+
 
 def test_login_logout(client):
     """Test login and logout using helper functions"""
@@ -80,6 +86,18 @@ def test_messages(client):
 
 def test_delete_message(client):
     """Ensure the messages are being deleted"""
-    rv = client.get('/delete/1')
+    rv = client.get("/delete/1")
+    data = json.loads(rv.data)
+    assert data["status"] == 0
+    login(client, app.config["USERNAME"], app.config["PASSWORD"])
+    rv = client.get("/delete/1")
     data = json.loads(rv.data)
     assert data["status"] == 1
+
+
+def test_delete_requires_login(client):
+    """Delete should not work if user is not logged in."""
+    response = client.get("/delete/1")
+    assert response.status_code in (302,401)
+
+
